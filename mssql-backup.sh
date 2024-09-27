@@ -1,10 +1,16 @@
 #!/bin/bash
 
-# Validate environment variables
-[ -z "$DB_SERVER" ] && { echo "Required environment variable DB_SERVER not set" && exit 1; }
-[ -z "$DB_USER" ] && { echo "Required environment variable DB_USER not set" && exit 1; }
-[ -z "$DB_PASSWORD" ] && { echo "Required environment variable DB_PASSWORD not set" && exit 1; }
-[ -z "$DB_NAMES" ] && { echo "Required environment variable DB_NAMES not set" && exit 1; }
+# Validate MSSQL environment variables
+[ -z "$MSSQL_DB_SERVER" ] && { echo "Required environment variable MSSQL_DB_SERVER not set" && exit 1; }
+[ -z "$MSSQL_DB_USER" ] && { echo "Required environment variable MSSQL_B_USER not set" && exit 1; }
+[ -z "$MSSQL_DB_PASSWORD" ] && { echo "Required environment variable MSSQL_DB_PASSWORD not set" && exit 1; }
+[ -z "$MSSQL_DB_NAMES" ] && { echo "Required environment variable MSSQL_DB_NAMES not set" && exit 1; }
+
+# Validate MYSQL environment variables
+# [ -z "$MYSQL_DB_SERVER" ] && { echo "Required environment variable MYSQL_DB_SERVER not set" && exit 1; }
+# [ -z "$MYSQL_DB_USER" ] && { echo "Required environment variable MYSQL_DB_USER not set" && exit 1; }
+# [ -z "$MYSQL_DB_PASSWORD" ] && { echo "Required environment variable MYSQL_DB_PASSWORD not set" && exit 1; }
+# [ -z "$MYSQL_DB_NAMES" ] && { echo "Required environment variable MYSQL_DB_NAMES not set" && exit 1; }
 
 echo "Backup started at $(date "+%Y-%m-%d %H:%M:%S")"
 
@@ -16,7 +22,7 @@ TARGETDIR="/backup"
 # Remote backup directory
 REMOTEDIR="/remote"
 
-for CURRENT_DB in $DB_NAMES
+for CURRENT_DB in $MSSQL_DB_NAMES
 do
 
   BACKUPNAME=$CURRENT_DATE.$CURRENT_DB
@@ -24,8 +30,8 @@ do
   # backup database files
   BAK_FILENAME=$TARGETDIR/$BACKUPNAME.bak
 
-  echo "Backup database $CURRENT_DB to $BAK_FILENAME on $DB_SERVER..."
-  if /opt/mssql-tools/bin/sqlcmd -S "$DB_SERVER" -U "$DB_USER" -P "$DB_PASSWORD" -b -Q "BACKUP DATABASE [$CURRENT_DB] TO DISK = N'$BAK_FILENAME' WITH NOFORMAT, NOINIT, NAME = '$CURRENT_DB-full', SKIP, NOUNLOAD, STATS = 10"
+  echo "Backup database $CURRENT_DB to $BAK_FILENAME on $MSSQL_DB_SERVER..."
+  if /opt/mssql-tools/bin/sqlcmd -S "$MSSQL_DB_SERVER" -U "$MSSQL_DB_USER" -P "$MSSQL_DB_PASSWORD" -b -Q "BACKUP DATABASE [$CURRENT_DB] TO DISK = N'$BAK_FILENAME' WITH NOFORMAT, NOINIT, NAME = '$CURRENT_DB-full', SKIP, NOUNLOAD, STATS = 10"
   then
     echo "Backup of database successfully created"
   else
@@ -37,8 +43,8 @@ do
   if [ "$SKIP_BACKUP_LOG" = false ]; then
     TRN_FILENAME=$TARGETDIR/$BACKUPNAME.trn
 
-    echo "Backup log of $CURRENT_DB to $TRN_FILENAME on $DB_SERVER..."
-    if /opt/mssql-tools/bin/sqlcmd -S "$DB_SERVER" -U "$DB_USER" -P "$DB_PASSWORD" -b -Q "BACKUP LOG [$CURRENT_DB] TO DISK = N'$TRN_FILENAME' WITH NOFORMAT, NOINIT, NAME = '$CURRENT_DB-log', SKIP, NOUNLOAD, STATS = 10"
+    echo "Backup log of $CURRENT_DB to $TRN_FILENAME on $MSSQL_DB_SERVER..."
+    if /opt/mssql-tools/bin/sqlcmd -S "$MSSQL_DB_SERVER" -U "$MSSQL_DB_USER" -P "$MSSQL_DB_PASSWORD" -b -Q "BACKUP LOG [$CURRENT_DB] TO DISK = N'$TRN_FILENAME' WITH NOFORMAT, NOINIT, NAME = '$CURRENT_DB-log', SKIP, NOUNLOAD, STATS = 10"
     then
       echo "Backup of log successfully created"
     else

@@ -73,9 +73,9 @@ cronLogConfig="> /proc/1/fd/1 2>&1 | tee -a $cronLogFile"
 if [[ $SMTP_HOST ]];
 then
     echo "Cron e-mail reporting activated. '${SMTP_HOST}'"
-    echo "$cronSchedule . /container_env.sh; /usr/local/bin/backup.sh $cronLogConfig | mail -s 'SQL Server Backup Result' $MAIL_TO $cronLogConfig" > /etc/cron.d/crontab.conf
+    echo "$cronSchedule . /container_env.sh; /usr/local/bin/mssql-backup.sh $cronLogConfig | mail -s 'SQL Server Backup Result' $MAIL_TO $cronLogConfig" > /etc/cron.d/crontab.conf
 else
-    echo "$cronSchedule . /container_env.sh; /usr/local/bin/backup.sh $cronLogConfig" > /etc/cron.d/crontab.conf
+    echo "$cronSchedule . /container_env.sh; /usr/local/bin/mssql-backup.sh $cronLogConfig" > /etc/cron.d/crontab.conf
 fi
 
 # Apply cron job
